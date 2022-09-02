@@ -1,4 +1,6 @@
 import React, { useEffect } from "react";
+import { getDownloadURL, ref, uploadString } from "firebase/storage";
+import { storage } from "./firebase";
 import { TextareaAutosize, TextField } from "@mui/material";
 import Web3 from "web3";
 import axios from "axios";
@@ -8,11 +10,13 @@ const apikey = "UBY73PQ1HIHCY9D5348318DFK92ZIP723E";
 const Form = () => {
   const [contractAddress, setContractAddress] = React.useState("");
   const [contractABI, setContractABI] = React.useState("");
+  const [contractABIUrl, setContractABIUrl] = React.useState("");
   const [startBlock, setStartBlock] = React.useState("");
   const web3 = new Web3(
     new Web3.providers.HttpProvider("https://rpc.ankr.com/eth_rinkeby")
   );
 
+  const storageRef = ref(storage, `/contracts/${contractAddress}`);
   const fetchABI = async (address: string) => {
     const response = await axios.get(
       `https://api-rinkeby.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${apikey}`
@@ -30,14 +34,20 @@ const Form = () => {
   };
 
   useEffect(() => {
-    if (contractAddress.length == 42) {
+    if (contractAddress.length === 42) {
       isContractAddress(contractAddress)
         .then((result) => {
           console.log(result, "is contract address");
           if (result) {
             fetchABI(contractAddress).then((abi) => {
-              console.log(abi, "abi");
               setContractABI(abi);
+              uploadString(storageRef, abi).then((snapshot) => {
+                console.log("Uploaded contract's ABI!");
+              });
+              getDownloadURL(storageRef).then((url) => {
+                console.log(url, "url");
+                setContractABIUrl(url);
+              });
             });
           }
         })
