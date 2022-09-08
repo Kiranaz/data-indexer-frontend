@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { getDownloadURL, ref, uploadString } from "firebase/storage";
 import { storage } from "./firebase";
-import { TextareaAutosize, TextField } from "@mui/material";
+import { Button, TextareaAutosize, TextField } from "@mui/material";
 import Web3 from "web3";
 import axios from "axios";
+import { submitContract } from "./services";
 
 const apikey = "UBY73PQ1HIHCY9D5348318DFK92ZIP723E";
 
@@ -11,7 +12,7 @@ const Form = () => {
   const [contractAddress, setContractAddress] = React.useState("");
   const [contractABI, setContractABI] = React.useState("");
   const [contractABIUrl, setContractABIUrl] = React.useState("");
-  const [startBlock, setStartBlock] = React.useState("");
+  const [startBlock, setStartBlock] = React.useState(0);
   const web3 = new Web3(
     new Web3.providers.HttpProvider("https://rpc.ankr.com/eth_rinkeby")
   );
@@ -78,7 +79,7 @@ const Form = () => {
         type="number"
         onChange={async (e) => {
           if (parseInt(e.target.value) < (await web3.eth.getBlockNumber())) {
-            setStartBlock(e.target.value);
+            setStartBlock(Number(e.target.value));
           }
         }}
         sx={{
@@ -95,6 +96,15 @@ const Form = () => {
         style={{ width: "50%" }}
         disabled={true}
       />
+      <Button
+        variant="contained"
+        sx={{ mt: 2, width: "50%", height: "3rem" }}
+        onClick={() => {
+          submitContract(contractAddress, startBlock, contractABIUrl);
+        }}
+      >
+        Submit
+      </Button>
     </div>
   );
 };
