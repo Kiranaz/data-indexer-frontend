@@ -5,6 +5,7 @@ import { Button, TextareaAutosize, TextField } from "@mui/material";
 import Web3 from "web3";
 import axios from "axios";
 import { submitContract } from "./services";
+import { useNavigate } from "react-router-dom";
 
 const apikey = "UBY73PQ1HIHCY9D5348318DFK92ZIP723E";
 
@@ -12,11 +13,15 @@ const Form = () => {
   const [contractAddress, setContractAddress] = React.useState("");
   const [contractABI, setContractABI] = React.useState("");
   const [contractABIUrl, setContractABIUrl] = React.useState("");
+  const [userName, setUserName] = React.useState("");
+  const [indexerName, setInderName] = React.useState("");
+  const [description, setDescription] = React.useState("");
+
   const [startBlock, setStartBlock] = React.useState(0);
   const web3 = new Web3(
     new Web3.providers.HttpProvider("https://rpc.ankr.com/eth_rinkeby")
   );
-
+  let navigate = useNavigate();
   const storageRef = ref(storage, `/contracts/${contractAddress}`);
   const fetchABI = async (address: string) => {
     const response = await axios.get(
@@ -74,6 +79,42 @@ const Form = () => {
       />
 
       <TextField
+        label="User Name"
+        margin="normal"
+        onChange={(e) => {
+          setUserName(e.target.value);
+        }}
+        sx={{
+          width: "50%",
+          mx: 3,
+        }}
+      />
+
+      <TextField
+        label="Indexer Name"
+        margin="normal"
+        onChange={(e) => {
+          setInderName(e.target.value);
+        }}
+        sx={{
+          width: "50%",
+          mx: 3,
+        }}
+      />
+
+      <TextField
+        label="Description"
+        margin="normal"
+        onChange={(e) => {
+          setDescription(e.target.value);
+        }}
+        sx={{
+          width: "50%",
+          mx: 3,
+        }}
+      />
+
+      <TextField
         label="Start Block"
         margin="normal"
         type="number"
@@ -88,19 +129,38 @@ const Form = () => {
         }}
       />
       <p>Contract ABI</p>
-      <TextareaAutosize
-        placeholder="Contract ABI"
-        value={contractABI}
-        minRows={5}
-        maxRows={15}
-        style={{ width: "50%" }}
-        disabled={true}
-      />
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <textarea
+          id="message"
+          placeholder="Contract ABI"
+          onChange={(e) => {
+            setContractABI(e.target.value);
+          }}
+          value={contractABI}
+          className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 justify-cen"
+          style={{ width: "50%" }}
+        ></textarea>
+      </div>
+
       <Button
         variant="contained"
         sx={{ mt: 2, width: "50%", height: "3rem" }}
-        onClick={() => {
-          submitContract(contractAddress, startBlock, contractABIUrl);
+        onClick={(e) => {
+          console.log(
+            "file: form.tsx ~ line 104 ~ Form ~ contractABIUrl",
+            contractABIUrl
+          );
+
+          submitContract(
+            contractAddress,
+            startBlock,
+            contractABIUrl,
+            userName,
+            indexerName,
+            description
+          ).then((res) => {
+            navigate(`/`);
+          });
         }}
       >
         Submit
