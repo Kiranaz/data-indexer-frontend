@@ -5,7 +5,7 @@ const Card = (data: any) => {
   console.log("file: index.tsx ~ line 4 ~ Card ~ data", data.data);
   data = data.data;
   return (
-    <div className="break-inside w-100 text-left relative overflow-hidden flex flex-col justify-between space-y-3 text-sm rounded-xl max-w-[23rem] p-4 mb-4 bg-white text-black dark:bg-slate-800 dark:text-white">
+    <div className="break-inside h-full w-100 text-left relative overflow-hidden flex flex-col justify-between space-y-3 text-sm rounded-xl max-w-[23rem] p-4 mb-4 bg-white text-black dark:bg-slate-800 dark:text-white">
       <div className="flex items-center flex-col justify-between font-medium">
         <span className="uppercase text-xs text-green-500">
           by {data?.userName}
